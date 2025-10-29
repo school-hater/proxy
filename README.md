@@ -113,6 +113,7 @@ Both deployments support these configuration options:
 | `RATE_LIMIT_REQUESTS` | Max requests per minute per IP | `60` |
 | `MAX_FILE_SIZE_MB` | Maximum file size to proxy | `500` |
 | `REQUEST_TIMEOUT_MS` | Request timeout in milliseconds | `30000` |
+| `SLACK_WEBHOOK_URL` | (Optional) Slack webhook for bug reports | `` (disabled) |
 
 **Default Allowed Domains** (when `ALLOWED_DOMAINS` is empty):
 - AWS S3, CloudFront, GitHub, Google Cloud Storage, Azure Blob Storage, Common CDNs

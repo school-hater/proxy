@@ -21,6 +21,7 @@ interface Env {
   HTTPS_ONLY?: string;
   REQUEST_TIMEOUT_MS?: string;
   ALLOW_CREDENTIALS?: string;
+  SLACK_WEBHOOK_URL?: string;
 }
 
 // Security: Private/internal IP patterns to block (SSRF protection)
@@ -542,17 +543,24 @@ async function handleBugReport(request: Request, env: Env): Promise<Response> {
     return corsError('Origin not allowed', origin, 403);
   }
 
+  // Check if webhook URL is configured on the server
+  const webhookUrl = env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    return corsError('Bug reporting is not configured on this server', origin, 503);
+  }
+
+  // Validate webhook URL is actually a Slack webhook
+  if (!webhookUrl.startsWith('https://hooks.slack.com/')) {
+    console.error('Invalid SLACK_WEBHOOK_URL configured:', webhookUrl);
+    return corsError('Server configuration error', origin, 500);
+  }
+
   try {
-    const body = await request.json();
-    const { slackPayload, webhookUrl } = body;
+    const body = await request.json() as { slackPayload?: any };
+    const { slackPayload } = body;
 
-    if (!slackPayload || !webhookUrl) {
-      return corsError('Missing slackPayload or webhookUrl', origin, 400);
-    }
-
-    // Validate webhook URL is actually a Slack webhook
-    if (!webhookUrl.startsWith('https://hooks.slack.com/')) {
-      return corsError('Invalid Slack webhook URL', origin, 400);
+    if (!slackPayload) {
+      return corsError('Missing slackPayload', origin, 400);
     }
 
     // Forward to Slack

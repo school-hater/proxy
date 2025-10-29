@@ -331,6 +331,75 @@ app.get('/proxy-path/:protocol/:host/*', async (req: Request, res: Response, nex
   }
 });
 
+// Bug report endpoint - POST to Slack webhook
+app.post('/bug-report', express.json(), async (req: Request, res: Response) => {
+  const origin = req.headers.origin;
+
+  // Validate origin
+  if (!origin || !config.allowedOrigins.includes(origin)) {
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
+
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Check if webhook URL is configured
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    return res.status(503).json({ error: 'Bug reporting is not configured on this server' });
+  }
+
+  // Validate webhook URL is actually a Slack webhook
+  if (!webhookUrl.startsWith('https://hooks.slack.com/')) {
+    console.error('Invalid SLACK_WEBHOOK_URL configured:', webhookUrl);
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
+  try {
+    const { slackPayload } = req.body;
+
+    if (!slackPayload) {
+      return res.status(400).json({ error: 'Missing slackPayload' });
+    }
+
+    // Forward to Slack
+    const slackResponse = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(slackPayload),
+    });
+
+    const responseText = await slackResponse.text();
+
+    return res.status(slackResponse.ok ? 200 : 500).json({
+      success: slackResponse.ok,
+      status: slackResponse.status,
+      message: responseText,
+    });
+  } catch (error) {
+    console.error('Bug report error:', error);
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// OPTIONS handler for bug report endpoint
+app.options('/bug-report', (req: Request, res: Response) => {
+  const origin = req.headers.origin;
+  if (origin && config.allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+  res.sendStatus(204);
+});
+
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({

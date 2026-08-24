@@ -11,15 +11,6 @@ routes = [
   { pattern = "cors-proxy.pondpilot.io/*", zone_name = "pondpilot.io" }
 ]
 
-# Rate limiting (Cloudflare Workers Bindings)
-[[unsafe.bindings]]
-name = "RATE_LIMITER"
-type = "ratelimit"
-namespace_id = "pondpilot_cors_proxy"
-
-# Simple rate limit: 60 requests per minute
-simple = { limit = 60, period = 60 }
-
 [env.production.vars]
 ALLOWED_ORIGINS = "https://app.pondpilot.io,http://localhost:5173"
 ALLOWED_DOMAINS = ""

@@ -6,11 +6,6 @@ compatibility_flags = ["nodejs_compat"]
 # Account details
 account_id = "2ec5cfa6f868c39680ed30c2f3d2ac1e"
 
-# Production route - Custom domain
-routes = [
-  { pattern = "cors-proxy.pondpilot.io/*", zone_name = "pondpilot.io" }
-]
-
 [env.production.vars]
 ALLOWED_ORIGINS = "https://app.pondpilot.io,http://localhost:5173"
 ALLOWED_DOMAINS = ""

@@ -4,7 +4,7 @@ compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Account details
-account_id = "15af93202d68497eb0c68d7a190fc5b9"
+account_id = "2ec5cfa6f868c39680ed30c2f3d2ac1e"
 
 # Production route - Custom domain
 routes = [

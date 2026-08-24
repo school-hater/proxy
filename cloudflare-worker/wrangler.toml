@@ -20,23 +20,6 @@ namespace_id = "pondpilot_cors_proxy"
 # Simple rate limit: 60 requests per minute
 simple = { limit = 60, period = 60 }
 
-# Environment variables
-#
-# Security Configuration:
-# - ALLOWED_ORIGINS: Comma-separated list of origins that can use the proxy
-# - ALLOWED_DOMAINS: Domain allowlist (leave empty for secure defaults)
-#   Default includes: S3, CloudFront, GitHub, GCS, Azure Blob Storage, CDNs
-#   Examples: "*.s3.amazonaws.com,*.cloudfront.net,data.example.com"
-# - HTTPS_ONLY: Set to "false" to allow HTTP (not recommended)
-# - REQUEST_TIMEOUT_MS: Request timeout in milliseconds
-# - MAX_FILE_SIZE_MB: Maximum file size to proxy
-#
-# Bug Reporting (Optional):
-# - SLACK_WEBHOOK_URL: Slack webhook for receiving bug reports
-#   IMPORTANT: Set this as a Cloudflare secret, NOT in this file:
-#   npx wrangler secret put SLACK_WEBHOOK_URL --env production
-#
-# Production environment - HTTPS enforced, secure defaults
 [env.production.vars]
 ALLOWED_ORIGINS = "https://app.pondpilot.io,http://localhost:5173"
 ALLOWED_DOMAINS = ""

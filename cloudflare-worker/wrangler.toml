@@ -8,7 +8,7 @@ workers_dev = true
 
 [env.production.vars]
 ALLOWED_ORIGINS = "https://app.pondpilot.io,http://localhost:5173"
-ALLOWED_DOMAINS = ""
+ALLOWED_DOMAINS = "google.com"
 HTTPS_ONLY = "true"
 RATE_LIMIT_REQUESTS = "60"
 MAX_FILE_SIZE_MB = "500"
